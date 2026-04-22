@@ -1,0 +1,46 @@
+using UnityEngine;
+
+[RequireComponent(typeof(SpriteRenderer))]
+public class HoldableSnack : MonoBehaviour
+{
+    [Header("Snack Info")]
+    public string snackColorId = "Red";
+    public int scoreValue = 100;
+
+    private bool hasBeenStored = false;
+    private SpriteRenderer sr;
+
+    private void Awake()
+    {
+        sr = GetComponent<SpriteRenderer>();
+    }
+
+    private void OnMouseOver()
+    {
+        if (hasBeenStored)
+            return;
+
+        if (GameManager.Instance != null && !GameManager.Instance.isGameRunning)
+            return;
+
+        // Right click stores the snack instead of letting it continue on the belt
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (HoldSlotManager.Instance != null)
+            {
+                bool stored = HoldSlotManager.Instance.TryStoreSnack(
+                    snackColorId,
+                    scoreValue,
+                    sr != null ? sr.sprite : null,
+                    sr != null ? sr.color : Color.white
+                );
+
+                if (stored)
+                {
+                    hasBeenStored = true;
+                    Destroy(gameObject);
+                }
+            }
+        }
+    }
+}
