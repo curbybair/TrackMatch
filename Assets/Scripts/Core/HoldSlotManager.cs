@@ -73,7 +73,24 @@ public class HoldSlotManager : MonoBehaviour
         if (heldSnack == null)
             return;
 
-        // This is where the held snack is treated as if Donnie got it
+        // Spawn the held block back onto the track at the top
+        BlockSpawner spawner = FindObjectOfType<BlockSpawner>();
+        if (spawner != null)
+        {
+            // Get the block prefab and spawn it
+            GameObject newBlock = Instantiate(
+                spawner.blockPrefab,
+                new Vector3(spawner.spawnX, spawner.spawnY, 0),
+                Quaternion.identity
+            );
+
+            // Apply the stored color and colorId
+            SpriteRenderer sr = newBlock.GetComponent<SpriteRenderer>();
+            sr.color = heldSnack.color;
+            newBlock.GetComponent<Block>().colorId = heldSnack.colorId;
+        }
+
+        // Add score and register combo
         if (ScoreManager.Instance != null)
             ScoreManager.Instance.AddScore(heldSnack.scoreValue);
 
