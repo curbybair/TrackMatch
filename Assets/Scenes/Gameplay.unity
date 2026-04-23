@@ -1791,7 +1791,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 1}
+  m_Size: {x: 1.3, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &1425486878
 MonoBehaviour:
@@ -2822,7 +2822,7 @@ MonoBehaviour:
   bombPrefab: {fileID: 434707507664619647, guid: a7f558b29089fbc46ba949f124783284, type: 3}
   spawnInterval: 2
   spawnX: 0
-  spawnY: 5
+  spawnY: 4
   bombChance: 0.2
 --- !u!4 &2003181987
 Transform:

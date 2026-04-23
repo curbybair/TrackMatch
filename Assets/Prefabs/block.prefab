@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee549521c6e09614bb73534c8ea45657, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Block
-  speed: 1.5
+  speed: 0.5
   isMoving: 1
   colorId: 
 --- !u!61 &1508086393619306759
