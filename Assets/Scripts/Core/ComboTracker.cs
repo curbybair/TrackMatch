@@ -44,11 +44,11 @@ public class ComboTracker : MonoBehaviour
     {
         if (!hasCollectedFirst)
         {
-            // First block ever collected
             hasCollectedFirst = true;
             currentStreak = 1;
             lastColor = collectedColor;
             timer = comboWindowSeconds;
+            ScoreManager.Instance.AddScore(pointsPerMatch); 
             Debug.Log("First block collected!");
             return;
         }

@@ -82,7 +82,9 @@ public class GameManager : MonoBehaviour
     {
         isGameRunning = false;
         Debug.Log("Game Over! Score: " + ScoreManager.Instance.currentScore);
-        Invoke("LoadGameOver", 2f);
+
+        // Show game over screen
+        FindObjectOfType<GameOverScreen>().ShowGameOver();
     }
 
     void LoadGameOver()
