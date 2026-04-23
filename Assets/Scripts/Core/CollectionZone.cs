@@ -24,4 +24,9 @@ public class CollectionZone : MonoBehaviour
             Destroy(other.gameObject);
         }
     }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        Debug.Log("Something is in the zone: " + other.gameObject.name);
+    }
 }

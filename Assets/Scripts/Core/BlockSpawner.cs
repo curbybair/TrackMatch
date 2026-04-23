@@ -12,7 +12,7 @@ public class BlockSpawner : MonoBehaviour
     public float spawnY = 5f;
 
     [Header("Difficulty")]
-    public float bombChance = 0.2f; 
+    public float bombChance = 0.2f;
 
     private float timer = 0f;
 
@@ -29,7 +29,6 @@ public class BlockSpawner : MonoBehaviour
 
     void SpawnBlock()
     {
-        // Decide whether to spawn a bomb or block
         float roll = Random.Range(0f, 1f);
 
         if (roll < bombChance)
@@ -41,24 +40,30 @@ public class BlockSpawner : MonoBehaviour
             GameObject newBlock = Instantiate(blockPrefab,
                 new Vector3(spawnX, spawnY, 0), Quaternion.identity);
 
-            // Assign random color
+            // Pick a random color index
+            string[] colorIds = { "Red", "Blue", "Green", "Yellow", "Purple", "Orange" };
+            int colorIndex = Random.Range(0, colorIds.Length);
+
+            // Assign color visually
             SpriteRenderer sr = newBlock.GetComponent<SpriteRenderer>();
-            sr.color = GetRandomColor();
+            sr.color = GetColorFromId(colorIds[colorIndex]);
+
+            // Assign colorId string to block
+            newBlock.GetComponent<Block>().colorId = colorIds[colorIndex];
         }
     }
 
-    Color GetRandomColor()
+    Color GetColorFromId(string colorId)
     {
-        Color[] colors = new Color[]
+        switch (colorId)
         {
-            new Color(0.93f, 0.23f, 0.23f), // Red
-            new Color(0.23f, 0.53f, 0.93f), // Blue
-            new Color(0.23f, 0.80f, 0.34f), // Green
-            new Color(0.98f, 0.85f, 0.17f), // Yellow
-            new Color(0.63f, 0.23f, 0.93f), // Purple
-            new Color(0.95f, 0.55f, 0.10f)  // Orange
-        };
-
-        return colors[Random.Range(0, colors.Length)];
+            case "Red": return new Color(0.93f, 0.23f, 0.23f);
+            case "Blue": return new Color(0.23f, 0.53f, 0.93f);
+            case "Green": return new Color(0.23f, 0.80f, 0.34f);
+            case "Yellow": return new Color(0.98f, 0.85f, 0.17f);
+            case "Purple": return new Color(0.63f, 0.23f, 0.93f);
+            case "Orange": return new Color(0.95f, 0.55f, 0.10f);
+            default: return Color.white;
+        }
     }
 }
