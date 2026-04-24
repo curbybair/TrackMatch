@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -30,12 +30,13 @@ public class PlayerInput : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.isGameRunning)
             return;
+
         HandleDrag();
     }
 
     void HandleDrag()
     {
-        // Left click - drag blocks
+        // LEFT CLICK DOWN
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePos = GetMouseWorldPosition();
@@ -47,16 +48,23 @@ public class PlayerInput : MonoBehaviour
                 if (HoldSlotManager.Instance.IsHeldBlock(hit.gameObject))
                     return;
 
-                if (hit.gameObject == lastClickedBlock &&
-                    Time.time - lastClickTime < doubleClickTime)
+                float timeSinceLastClick = Time.time - lastClickTime;
+
+                Debug.Log($"Clicked: {hit.gameObject.name}, Last: {(lastClickedBlock ? lastClickedBlock.name : "null")}, Time: {timeSinceLastClick}");
+
+                // ✅ DOUBLE CLICK CHECK
+                if (hit.gameObject == lastClickedBlock && timeSinceLastClick < doubleClickTime)
                 {
+                    Debug.Log("Double click detected! Destroying: " + hit.gameObject.name);
                     DestroyBlock(hit.gameObject);
                     return;
                 }
 
+                // ✅ SINGLE CLICK
                 lastClickTime = Time.time;
                 lastClickedBlock = hit.gameObject;
 
+                // Start dragging AFTER double-click check
                 if (hit.CompareTag("Block"))
                 {
                     draggedBlock = hit.gameObject;
@@ -65,9 +73,14 @@ public class PlayerInput : MonoBehaviour
                     offset = draggedBlock.transform.position - mousePos;
                 }
             }
+            else
+            {
+                // Clicked empty space
+                lastClickedBlock = null;
+            }
         }
 
-        // Mouse held - move block within belt boundaries
+        // MOUSE HELD (DRAGGING)
         if (Input.GetMouseButton(0) && draggedBlock != null)
         {
             Vector3 newPos = GetMouseWorldPosition() + offset;
@@ -76,7 +89,7 @@ public class PlayerInput : MonoBehaviour
             draggedBlock.transform.position = newPos;
         }
 
-        // Mouse released - check for overlaps
+        // MOUSE RELEASE
         if (Input.GetMouseButtonUp(0) && draggedBlock != null)
         {
             if (IsOverlapping())
@@ -87,10 +100,11 @@ public class PlayerInput : MonoBehaviour
 
             draggedBlock.GetComponent<Block>().isMoving = true;
             draggedBlock = null;
-            lastClickedBlock = null;
+
+            
         }
 
-        // Right click - store block in hold slot
+        // RIGHT CLICK (HOLD SLOT)
         if (Input.GetMouseButtonDown(1))
         {
             Vector3 mousePos = GetMouseWorldPosition();
@@ -116,7 +130,7 @@ public class PlayerInput : MonoBehaviour
         Collider2D col = draggedBlock.GetComponent<Collider2D>();
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             draggedBlock.transform.position,
-            col.bounds.size * 0.9f,
+            col.bounds.size * 0.5f,
             0f
         );
 

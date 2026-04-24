@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 
 public class HoldSlotManager : MonoBehaviour
@@ -8,6 +8,12 @@ public class HoldSlotManager : MonoBehaviour
     [Header("Hold Slot")]
     public Transform holdPoint;
     public TextMeshProUGUI heldText;
+
+    [Header("Belt Boundaries")]
+    public float beltLeft = -0.7f;
+    public float beltRight = 0.7f;
+    public float beltTop = 4.5f;
+    public float beltBottom = -3.5f;
 
     private Block heldBlock;
     private bool isDraggingHeldBlock = false;
@@ -78,11 +84,22 @@ public class HoldSlotManager : MonoBehaviour
         if (heldBlock == null || mainCam == null)
             return;
 
+        Vector3 mouseWorld = GetMouseWorldPosition();
+        int blockLayer = LayerMask.GetMask("Blocks");
+
+        // MOUSE DOWN
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 mouseWorld = GetMouseWorldPosition();
-            Collider2D hit = Physics2D.OverlapPoint(mouseWorld);
+            Collider2D hit = Physics2D.OverlapPoint(mouseWorld, blockLayer);
 
+            //licking anything else = ignore held block system
+            if (hit != null && hit.gameObject != heldBlock.gameObject)
+            {
+                isDraggingHeldBlock = false;
+                return;
+            }
+
+            //  Only start dragging held block
             if (hit != null && hit.gameObject == heldBlock.gameObject)
             {
                 isDraggingHeldBlock = true;
@@ -90,17 +107,58 @@ public class HoldSlotManager : MonoBehaviour
             }
         }
 
+        //  DRAGGING (with clamp)
         if (isDraggingHeldBlock && Input.GetMouseButton(0))
         {
-            Vector3 mouseWorld = GetMouseWorldPosition();
-            heldBlock.transform.position = mouseWorld + dragOffset;
+            Vector3 newPos = mouseWorld + dragOffset;
+
+            newPos.x = Mathf.Clamp(newPos.x, beltLeft, beltRight);
+            newPos.y = Mathf.Clamp(newPos.y, beltBottom, beltTop);
+
+            heldBlock.transform.position = newPos;
         }
 
+        // RELEASE
         if (isDraggingHeldBlock && Input.GetMouseButtonUp(0))
         {
             isDraggingHeldBlock = false;
-            ReleaseHeldBlockToConveyor();
+
+            if (IsOverlapping())
+            {
+                // Invalid placement → snap back to hold slot
+                heldBlock.transform.position = holdPoint.position;
+                heldBlock.transform.SetParent(holdPoint);
+
+                Debug.Log("Invalid placement - snapped back to hold slot");
+            }
+            else
+            {
+                // Valid placement → release to conveyor
+                ReleaseHeldBlockToConveyor();
+            }
         }
+    }
+
+    private bool IsOverlapping()
+    {
+        Collider2D col = heldBlock.GetComponent<Collider2D>();
+
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            heldBlock.transform.position,
+            col.bounds.size * 0.5f,
+            0f
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.gameObject != heldBlock.gameObject &&
+                (hit.CompareTag("Block") || hit.CompareTag("Bomb")))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void ReleaseHeldBlockToConveyor()
