@@ -353,7 +353,7 @@ GameObject:
   m_Component:
   - component: {fileID: 222064274}
   - component: {fileID: 222064273}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +428,7 @@ Transform:
   m_GameObject: {fileID: 222064272}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.3, z: 0}
   m_LocalScale: {x: 0.5, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1014,6 +1014,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoldSlotManager
   holdPoint: {fileID: 348546060}
   heldText: {fileID: 337818478}
+  beltLeft: -0.25
+  beltRight: 0.25
+  beltTop: 1
+  beltBottom: -1
 --- !u!4 &550186518
 Transform:
   m_ObjectHideFlags: 0
@@ -1880,7 +1884,7 @@ MonoBehaviour:
   beltRight: 0.25
   beltTop: 1
   beltBottom: -1
-  clickRadius: 0.3
+  clickRadius: 0
 --- !u!4 &1373876180
 Transform:
   m_ObjectHideFlags: 0
@@ -2988,7 +2992,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 1425486876}
-  - {fileID: 222064274}
   - {fileID: 2003181987}
   - {fileID: 1990703595}
   - {fileID: 1024929545}
@@ -3001,3 +3004,4 @@ SceneRoots:
   - {fileID: 307102263}
   - {fileID: 928283789}
   - {fileID: 162036662}
+  - {fileID: 222064274}
