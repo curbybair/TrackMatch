@@ -1014,17 +1014,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoldSlotManager
   holdPoint: {fileID: 348546060}
   heldText: {fileID: 337818478}
-<<<<<<< HEAD
+
   beltLeft: -0.25
   beltRight: 0.25
   beltTop: 1
   beltBottom: -1
-=======
-  beltLeft: -0.7
-  beltRight: 0.7
-  beltTop: 4.5
-  beltBottom: -3.5
->>>>>>> e5256e92ec8cad034b937cb41620fec57d299ce5
+
 --- !u!4 &550186518
 Transform:
   m_ObjectHideFlags: 0
