@@ -5,23 +5,15 @@ public class HoldSlotManager : MonoBehaviour
 {
     public static HoldSlotManager Instance { get; private set; }
 
-    [System.Serializable]
-    public class HeldSnackData
-    {
-        public string colorId;
-        public int scoreValue;
-        public Sprite sprite;
-        public Color color;
-    }
-
-    [Header("Held Snack UI")]
-    public SpriteRenderer heldPreviewRenderer;
+    [Header("Hold Slot")]
+    public Transform holdPoint;
     public TextMeshProUGUI heldText;
 
-    [Header("Use Key")]
-    public KeyCode useHeldKey = KeyCode.H;
+    private Block heldBlock;
+    private bool isDraggingHeldBlock = false;
+    private Vector3 dragOffset;
 
-    private HeldSnackData heldSnack;
+    private Camera mainCam;
 
     private void Awake()
     {
@@ -32,6 +24,7 @@ public class HoldSlotManager : MonoBehaviour
         }
 
         Instance = this;
+        mainCam = Camera.main;
         UpdateUI();
     }
 
@@ -40,86 +33,107 @@ public class HoldSlotManager : MonoBehaviour
         if (GameManager.Instance != null && !GameManager.Instance.isGameRunning)
             return;
 
-        if (Input.GetKeyDown(useHeldKey))
-        {
-            UseHeldSnack();
-        }
+        HandleHeldBlockDrag();
     }
 
-    public bool HasHeldSnack()
+    public bool HasHeldBlock()
     {
-        return heldSnack != null;
+        return heldBlock != null;
     }
 
-    public bool TryStoreSnack(string colorId, int scoreValue, Sprite sprite, Color color)
+    public bool TryStoreBlock(Block block)
     {
-        if (heldSnack != null)
+        if (block == null || heldBlock != null)
             return false;
 
-        heldSnack = new HeldSnackData
+        heldBlock = block;
+
+        heldBlock.transform.SetParent(holdPoint);
+        heldBlock.transform.position = holdPoint.position;
+
+        heldBlock.isMoving = false;
+
+        Collider2D col = heldBlock.GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = true;
+
+        Rigidbody2D rb = heldBlock.GetComponent<Rigidbody2D>();
+        if (rb != null)
         {
-            colorId = colorId,
-            scoreValue = scoreValue,
-            sprite = sprite,
-            color = color
-        };
+            rb.linearVelocity = Vector2.zero;
+            rb.simulated = false;
+        }
 
         UpdateUI();
         return true;
     }
 
-    public void UseHeldSnack()
+    public bool IsHeldBlock(GameObject obj)
     {
-        if (heldSnack == null)
+        return heldBlock != null && heldBlock.gameObject == obj;
+    }
+
+    private void HandleHeldBlockDrag()
+    {
+        if (heldBlock == null || mainCam == null)
             return;
 
-        // Spawn the held block back onto the track at the top
-        BlockSpawner spawner = FindObjectOfType<BlockSpawner>();
-        if (spawner != null)
+        if (Input.GetMouseButtonDown(0))
         {
-            // Get the block prefab and spawn it
-            GameObject newBlock = Instantiate(
-                spawner.blockPrefab,
-                new Vector3(spawner.spawnX, spawner.spawnY, 0),
-                Quaternion.identity
-            );
+            Vector3 mouseWorld = GetMouseWorldPosition();
+            Collider2D hit = Physics2D.OverlapPoint(mouseWorld);
 
-            // Apply the stored color and colorId
-            SpriteRenderer sr = newBlock.GetComponent<SpriteRenderer>();
-            sr.color = heldSnack.color;
-            newBlock.GetComponent<Block>().colorId = heldSnack.colorId;
+            if (hit != null && hit.gameObject == heldBlock.gameObject)
+            {
+                isDraggingHeldBlock = true;
+                dragOffset = heldBlock.transform.position - mouseWorld;
+            }
         }
 
-        // Add score and register combo
-        if (ScoreManager.Instance != null)
-            ScoreManager.Instance.AddScore(heldSnack.scoreValue);
+        if (isDraggingHeldBlock && Input.GetMouseButton(0))
+        {
+            Vector3 mouseWorld = GetMouseWorldPosition();
+            heldBlock.transform.position = mouseWorld + dragOffset;
+        }
 
-        if (ComboTrackerAdapter.Instance != null)
-            ComboTrackerAdapter.Instance.RegisterHeldColor(heldSnack.colorId);
+        if (isDraggingHeldBlock && Input.GetMouseButtonUp(0))
+        {
+            isDraggingHeldBlock = false;
+            ReleaseHeldBlockToConveyor();
+        }
+    }
 
-        heldSnack = null;
+    private void ReleaseHeldBlockToConveyor()
+    {
+        if (heldBlock == null)
+            return;
+
+        heldBlock.transform.SetParent(null);
+        heldBlock.isMoving = true;
+
+        Rigidbody2D rb = heldBlock.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        heldBlock = null;
         UpdateUI();
+    }
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        Vector3 mouse = Input.mousePosition;
+        mouse.z = 0f;
+        Vector3 world = mainCam.ScreenToWorldPoint(mouse);
+        world.z = 0f;
+        return world;
     }
 
     private void UpdateUI()
     {
-        if (heldPreviewRenderer != null)
-        {
-            if (heldSnack != null)
-            {
-                heldPreviewRenderer.enabled = true;
-                heldPreviewRenderer.sprite = heldSnack.sprite;
-                heldPreviewRenderer.color = heldSnack.color;
-            }
-            else
-            {
-                heldPreviewRenderer.enabled = false;
-            }
-        }
-
         if (heldText != null)
-        {
-            heldText.text = heldSnack == null ? "Held: Empty" : "Held: Ready";
-        }
+            heldText.text = heldBlock == null ? "Held: Empty" : "Held: Ready";
     }
 }
