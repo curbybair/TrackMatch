@@ -1014,12 +1014,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoldSlotManager
   holdPoint: {fileID: 348546060}
   heldText: {fileID: 337818478}
-
-  beltLeft: -0.25
-  beltRight: 0.25
-  beltTop: 1
-  beltBottom: -1
-
+  beltLeft: -0.7
+  beltRight: 0.7
+  beltTop: 4.5
+  beltBottom: -3.5
 --- !u!4 &550186518
 Transform:
   m_ObjectHideFlags: 0
@@ -1809,10 +1807,10 @@ RectTransform:
   - {fileID: 1427429080}
   m_Father: {fileID: 1943992291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -289.5, y: -163}
-  m_SizeDelta: {x: 579, y: 326}
+  m_AnchoredPosition: {x: 0.5, y: 0}
+  m_SizeDelta: {x: -1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1155791314
 MonoBehaviour:

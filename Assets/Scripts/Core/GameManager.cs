@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f;
         spawner = FindObjectOfType<BlockSpawner>();
         Invoke("StartGame", 1f);
     }
@@ -51,6 +52,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        Time.timeScale = 1f;
         isGameRunning = true;
 
         if (ScoreManager.Instance != null)
@@ -61,7 +63,6 @@ public class GameManager : MonoBehaviour
         if (spawner != null)
             spawner.spawnInterval = spawnInterval;
 
-        // Start music
         AudioManager.Instance.PlayMusic();
 
         Debug.Log("Game Started!");
@@ -84,8 +85,8 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         isGameRunning = false;
+        Time.timeScale = 0f;
 
-        // Stop music and play game over sound
         AudioManager.Instance.StopMusic();
         AudioManager.Instance.PlayGameOver();
 
@@ -100,6 +101,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("Gameplay");
     }
 }
