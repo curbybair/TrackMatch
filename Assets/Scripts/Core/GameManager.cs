@@ -61,6 +61,9 @@ public class GameManager : MonoBehaviour
         if (spawner != null)
             spawner.spawnInterval = spawnInterval;
 
+        // Start music
+        AudioManager.Instance.PlayMusic();
+
         Debug.Log("Game Started!");
     }
 
@@ -81,9 +84,12 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         isGameRunning = false;
-        Debug.Log("Game Over! Score: " + ScoreManager.Instance.currentScore);
 
-        // Show game over screen
+        // Stop music and play game over sound
+        AudioManager.Instance.StopMusic();
+        AudioManager.Instance.PlayGameOver();
+
+        Debug.Log("Game Over! Score: " + ScoreManager.Instance.currentScore);
         FindObjectOfType<GameOverScreen>().ShowGameOver();
     }
 

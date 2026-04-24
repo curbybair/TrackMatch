@@ -61,6 +61,8 @@ public class ComboTracker : MonoBehaviour
             int points = currentStreak * pointsPerMatch;
             ScoreManager.Instance.AddScore(points);
             Debug.Log("Combo! Streak: " + currentStreak + " Points: " + points);
+            if (currentStreak >= 2)
+                AudioManager.Instance.PlayCombo();
         }
         else
         {

@@ -15,6 +15,8 @@ public class CollectionZone : MonoBehaviour
 
             // Destroy the block
             Destroy(other.gameObject);
+
+            AudioManager.Instance.PlayCollect();
         }
 
         if (other.CompareTag("Bomb"))
@@ -22,6 +24,8 @@ public class CollectionZone : MonoBehaviour
             // Bomb reached the end - game over!
             GameManager.Instance.EndGame();
             Destroy(other.gameObject);
+            AudioManager.Instance.PlayBomb();
+
         }
     }
 
